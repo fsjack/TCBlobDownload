@@ -84,7 +84,7 @@ typedef NS_ENUM(NSUInteger, TCBlobDownloadState) {
  
  @since 1.0
  */
-@property (nonatomic, unsafe_unretained) id<TCBlobDownloaderDelegate> delegate;
+@property (nonatomic, weak) id<TCBlobDownloaderDelegate> delegate;
 
 /**
  The directory where the file is being downloaded.
