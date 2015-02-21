@@ -28,6 +28,7 @@ NSString * const TCBlobDownloadErrorHTTPStatusKey = @"TCBlobDownloadErrorHTTPSta
 // Speed rate and remaining time
 @property (nonatomic, strong) NSTimer *speedTimer;
 @property (nonatomic, strong) NSMutableArray *samplesOfDownloadedBytes;
+@property (nonatomic, assign) uint64_t downloadedDataLength;
 @property (nonatomic, assign) uint64_t expectedDataLength;
 @property (nonatomic, assign) uint64_t receivedDataLength;
 @property (nonatomic, assign) uint64_t previousTotal;
@@ -137,6 +138,7 @@ NSString * const TCBlobDownloadErrorHTTPStatusKey = @"TCBlobDownloadErrorHTTPSta
         uint64_t fileSize = [[fm attributesOfItemAtPath:self.pathToFile error:nil] fileSize];
         NSString *range = [NSString stringWithFormat:@"bytes=%lld-", fileSize];
         [self.fileRequest setValue:range forHTTPHeaderField:@"Range"];
+        self.receivedDataLength = self.downloadedDataLength = fileSize;
     }
 
     // Initialization of everything we'll need to download the file
@@ -197,7 +199,7 @@ NSString * const TCBlobDownloadErrorHTTPStatusKey = @"TCBlobDownloadErrorHTTPSta
 
 - (void)connection:(NSURLConnection*)connection didReceiveResponse:(NSURLResponse *)response
 {
-    self.expectedDataLength = [response expectedContentLength];
+    self.expectedDataLength = self.downloadedDataLength + [response expectedContentLength];
     
     NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
     NSError *error;
