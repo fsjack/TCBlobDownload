@@ -312,18 +312,20 @@ NSString * const TCBlobDownloadErrorHTTPStatusKey = @"TCBlobDownloadErrorHTTPSta
     [self.file closeFile];
     
     // Let's finish the operation once and for all
-    [self willChangeValueForKey:@"isFinished"];
+    if(state != TCBlobDownloadStateCancelled) [self willChangeValueForKey:@"isFinished"];
     [self willChangeValueForKey:@"isExecuting"];
     self.state = state;
     [self didChangeValueForKey:@"isExecuting"];
-    [self didChangeValueForKey:@"isFinished"];
+    if(state != TCBlobDownloadStateCancelled) [self didChangeValueForKey:@"isFinished"];
 }
 
 - (void)cancel
 {
+    [self willChangeValueForKey:@"isFinished"];
     [self willChangeValueForKey:@"isCancelled"];
     [self finishOperationWithState:TCBlobDownloadStateCancelled];
     [self didChangeValueForKey:@"isCancelled"];
+    [self didChangeValueForKey:@"isFinished"];    
 }
 
 - (void)notifyFromCompletionWithError:(NSError *)error pathToFile:(NSString *)pathToFile
